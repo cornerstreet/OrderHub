@@ -10,9 +10,17 @@
     "prisma:generate": "prisma generate",
     "prisma:migrate": "prisma migrate dev",
     "prisma:studio": "prisma studio",
-    "prisma:seed": "ts-node prisma/seed.ts"
+    "prisma:seed": "ts-node prisma/seed.ts",
+    "manual-verify": "ts-node scripts/manual-verify.ts"
   },
-  "keywords": ["crm", "orders", "management"],
+  "prisma": {
+    "seed": "ts-node prisma/seed.ts"
+  },
+  "keywords": [
+    "crm",
+    "orders",
+    "management"
+  ],
   "author": "",
   "license": "ISC",
   "dependencies": {
@@ -30,6 +38,7 @@
     "@types/express": "^4.17.21",
     "@types/jsonwebtoken": "^9.0.5",
     "@types/node": "^20.10.5",
+    "axios": "^1.12.2",
     "nodemon": "^3.0.2",
     "prisma": "^5.7.0",
     "ts-node": "^10.9.2",

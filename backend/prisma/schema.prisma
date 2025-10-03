@@ -18,6 +18,11 @@ model User {
   updatedAt DateTime @updatedAt
 }
 
+model OrderCounter {
+  id    String @id @default("counter")
+  count Int
+}
+
 model Product {
   id        String      @id @default(uuid())
   sku       String      @unique

@@ -114,33 +114,48 @@ export const createOrder = async (req: Request, res: Response) => {
     // Розрахунок загальної суми
     const total = data.items.reduce((sum, item) => sum + item.price * item.quantity, 0);
 
-    // Генерація номера замовлення
-    const orderCount = await prisma.order.count();
-    const orderNumber = `ORD-${String(orderCount + 1).padStart(3, '0')}`;
-
-    const order = await prisma.order.create({
-      data: {
-        orderNumber,
-        source: data.source,
-        customerName: data.customerName,
-        customerEmail: data.customerEmail,
-        customerAddress: data.customerAddress,
-        total,
-        fees: data.fees,
-        status: OrderStatus.New,
-        items: {
-          create: data.items.map(item => ({
-            productId: item.productId,
-            title: item.title,
-            quantity: item.quantity,
-            price: item.price,
-            cost: item.cost
-          }))
+    const order = await prisma.$transaction(async (tx) => {
+      // Атомарно оновлюємо лічильник і отримуємо нове значення
+      const updatedCounter = await tx.orderCounter.update({
+        where: { id: 'counter' },
+        data: {
+          count: {
+            increment: 1
+          }
         }
-      },
-      include: {
-        items: true
-      }
+      });
+      const newOrderCount = updatedCounter.count;
+
+      // Генеруємо номер замовлення
+      const orderNumber = `ORD-${String(newOrderCount).padStart(3, '0')}`;
+
+      // Створюємо замовлення
+      const newOrder = await tx.order.create({
+        data: {
+          orderNumber,
+          source: data.source,
+          customerName: data.customerName,
+          customerEmail: data.customerEmail,
+          customerAddress: data.customerAddress,
+          total,
+          fees: data.fees,
+          status: OrderStatus.New,
+          items: {
+            create: data.items.map(item => ({
+              productId: item.productId,
+              title: item.title,
+              quantity: item.quantity,
+              price: item.price,
+              cost: item.cost
+            }))
+          }
+        },
+        include: {
+          items: true
+        }
+      });
+
+      return newOrder;
     });
 
     res.status(201).json({

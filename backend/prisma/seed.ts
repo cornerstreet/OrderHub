@@ -160,6 +160,18 @@ async function main() {
 
   console.log('✅ Created 3 test orders');
 
+  // Ініціалізація лічильника замовлень
+  const orderCount = await prisma.order.count();
+  await prisma.orderCounter.upsert({
+    where: { id: 'counter' },
+    update: { count: orderCount },
+    create: {
+      id: 'counter',
+      count: orderCount
+    }
+  });
+  console.log(`✅ Initialized order counter to: ${orderCount}`);
+
   console.log('🎉 Database seeding completed successfully!');
 }
 

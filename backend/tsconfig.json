@@ -13,6 +13,11 @@
     "moduleResolution": "node",
     "types": ["node"]
   },
-  "include": ["src/**/*", "prisma/**/*"],
-  "exclude": ["node_modules", "dist"]
+  "include": ["src/**/*"],
+  "exclude": [
+    "node_modules",
+    "dist",
+    "src/controllers/integrationsController OLD.ts",
+    "src/controllers/authController _ OLD.ts"
+  ]
 }
